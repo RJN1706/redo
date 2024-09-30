@@ -1,0 +1,107 @@
+{% extends "recipe/base.html" %}
+{% block content %}
+ 
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<div class="container mt-5">
+
+    <!-- Search Form -->
+    <form method="get" action="" class="mb-4">
+        <div class="input-group col-6 mx-auto">
+            <input type="text" name="search" class="form-control" placeholder="Search for recipes..." value="{{ request.GET.search }}">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Add Recipe Form -->
+    <form class="col-6 mx-auto card p-3 shadow-lg" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2 class="text  text-center"> My Recipes </h2>
+        <br>
+        <h3>Add Recipe</h3>
+        <hr>
+        <div class="form-group">
+            <label>Recipe name</label>
+            <input name="recipe_name" type="text" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Recipe description</label>
+            <textarea name="recipe_description" class="form-control" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Recipe Image</label>
+            <input name="recipe_image" type="file" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-success">Add Recipe</button>
+    </form>
+
+    <style>
+           .edit-btn, .delete-btn {
+            color: black; /* Text color */
+            background-color: transparent; /* Transparent background */
+            border: 1px solid black; /* Black border */
+            transition: all 0.3s ease; /* Smooth transition */
+            padding: 10px 20px;
+            text-decoration: none; /* Remove underline for anchor tag */
+            cursor: pointer; /* Change cursor to pointer */
+            border-radius: 5px; /* Optional: rounded corners */
+            font-size: 16px; /* Font size */
+            display: inline-flex; /* Centering icon and text */
+            align-items: center; /* Centering icon and text */
+        }
+        
+        .edit-btn:hover, .delete-btn:hover {
+            color: white; /* Text color on hover */
+            background-color: black; /* Background color on hover */
+            border: 1px solid white; /* Border color on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        /* Ensures buttons are displayed inline */
+        form {
+            display: inline; /* Ensures the form stays inline */
+        }
+        
+        
+        </style>
+    <!-- Display Recipes -->
+    <div class="mt-5">
+        <h3>Recipes</h3>
+        <hr>
+        {% if recipes %}
+            <div class="row">
+                {% for recipe in recipes %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <img src="{{ recipe.recipe_image.url }}" class="card-img-top" alt="{{ recipe.recipe_name }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ recipe.recipe_name }}</h5>
+                                <p class="card-text">{{ recipe.recipe_description }}</p>
+                               
+                                <a href="{% url 'update_recipe' recipe.id %}" class="edit-btn"> <i class="fas fa-wrench"></i> Edit</a>
+                                <form method="post" action="{% url 'delete_recipe' recipe.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this recipe?');">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                        
+                                    </button>
+                                   
+                                </form>
+                                
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div> 
+        {% else %} 
+            <p>No recipes found.</p> 
+        {% endif %} 
+    </div> 
+</div> 
+
+{% endblock %}
+
